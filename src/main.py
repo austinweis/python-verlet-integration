@@ -2,6 +2,8 @@ import math, json, os
 
 import pygame
 import rag
+import tkinter as tk
+from tkinter.filedialog import askopenfilename
 
 pygame.init()
 
@@ -17,7 +19,10 @@ def main():
     scale = 20
 
     # load ragdoll from json
-    data = open(os.path.dirname(os.path.realpath(__file__)) + "/object.rag", "r")
+    #data = open(os.path.dirname(os.path.realpath(__file__)) + "/object.rag", "r")
+    tk.Tk().withdraw() # part of the import if you are not using other tkinter functions
+    fn = askopenfilename()
+    data = open(fn)
     data = json.loads(data.read())
     ragdoll = rag.Rag(data)
 
