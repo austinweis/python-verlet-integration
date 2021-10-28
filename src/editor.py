@@ -176,7 +176,7 @@ def edit():
                             "forms": paths,
                             "statics" : statics
                         }
-
+                                        
                         file = open(os.path.dirname(os.path.realpath(__file__))+ "/" + fileName + ".rag", "w")
                         file.write(json.dumps(data, indent=4))
                         file.close()
@@ -264,4 +264,6 @@ def edit():
         screen.blit(textSurface, (simulationButton.centerx - textSurface.get_width()/2, simulationButton.centery - textSurface.get_height()/2))
 
         pygame.display.update()
-edit()
+
+if __name__ == '__main__':
+    edit()
