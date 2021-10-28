@@ -2,6 +2,7 @@ import math, json, os
 
 import pygame
 import rag
+import editor
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
 
@@ -14,9 +15,20 @@ def main():
     pygame.display.set_caption("Verlet Physics Simulation")
     screen_color = (25, 25, 25)
     screen.fill(screen_color)
+    font = pygame.font.Font(None, 20)
 
     clock = pygame.time.Clock()
     scale = 20
+
+    #menu bar setup
+    menuBarHeight = 20
+    menuBar = pygame.Rect((0, 0),(1280, menuBarHeight))
+    menuBarColor = (120, 120, 120)
+
+    #edit button
+    editButton = pygame.Rect((0,0), (50, menuBarHeight))
+    editButtonColor = (200,200,200)
+    editButtonText = "Editor"
 
     # load ragdoll from json
     #data = open(os.path.dirname(os.path.realpath(__file__)) + "/object.rag", "r")
@@ -56,9 +68,14 @@ def main():
         m_x = pygame.mouse.get_pos()[0] # get x value of mouse position
         m_y = pygame.mouse.get_pos()[1] # get y value of mouse position
 
+        #gui
         screen.fill(screen_color)
         update_rag(ragdoll, 6)
         draw_rag(ragdoll)
+        pygame.draw.rect(screen, menuBarColor, menuBar)
+        textSurface = font.render(editButtonText, True, (0, 0, 0))
+        pygame.draw.rect(screen, editButtonColor, editButton)
+        screen.blit(textSurface, (editButton.centerx - textSurface.get_width()/2, editButton.centery - textSurface.get_height()/2))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -69,6 +86,11 @@ def main():
                         mouse_point = i
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse_point = None
+                if event.button == pygame.BUTTON_LEFT:
+                    if editButton.collidepoint(m_x, m_y):
+                        editor.edit()
+                        pygame.quit()
+                        exit()
 
         if mouse_point in ragdoll.statics:
             ragdoll.move_static_point(mouse_point, (m_x/scale, m_y/scale))
@@ -77,6 +99,10 @@ def main():
             
         pygame.display.update()
         clock.tick(60)
+        
+    
 
 if __name__ == '__main__':
+    print("Running")
     main()
+   
