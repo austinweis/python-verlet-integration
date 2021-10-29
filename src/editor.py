@@ -4,18 +4,18 @@ from sys import exit
 
 pygame.init()
 
-font = pygame.font.Font(None, 20)
+def edit():
+    file_path = ui.file_prompt()
+    file = open(file_path, "r")
+    json_data = json.loads(file.read())
+    file.close()
+      
+    width, height = 720, 720
+    screen = pygame.display.set_mode((width + 300, height))
+    pygame.display.set_caption("Verlet Object Editor")
 
-width, height = 720, 720
-cellSize = 20
+    cellSize = 20
 
-file = ui.file_prompt()
-json_data = json.loads(file.read())
-
-screen = pygame.display.set_mode((width + 300, height))
-pygame.display.set_caption("Verlet Object Editor")
-
-def editor():
     points  = json_data["points"]
     sticks  = json_data["sticks"]
     paths   = json_data["forms"]
@@ -134,7 +134,7 @@ def editor():
                             "forms": paths,
                             "statics" : statics
                         }
-
+                        file = open(file_path, "w")
                         file.write(json.dumps(data, indent=4))
                         file.close()
                     if clear_button.rect.collidepoint(m_x, m_y):
@@ -145,7 +145,7 @@ def editor():
                         statics = []
                     if simulate_button.rect.collidepoint(m_x, m_y):
                         simulate_button.color = (255, 255, 0)
-                        main.main(file)
+                        main.main()
                         pygame.quit()     
                         exit()      
                         
@@ -199,4 +199,4 @@ def editor():
 
         pygame.display.update()
 if __name__ == "__main__":
-    editor()
+    edit()

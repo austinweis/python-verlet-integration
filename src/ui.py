@@ -6,8 +6,8 @@ font = pygame.font.Font(None, 20)
 
 def file_prompt():
     tkinter.Tk().withdraw()
-    fn = filedialog.askopenfilename()
-    return open(fn)
+    path = filedialog.askopenfilename()
+    return path
 
 class Button:
     def __init__(self, dimensions, color, text=None):
