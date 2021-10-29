@@ -4,9 +4,7 @@ from sys import exit
 
 pygame.init()
 
-def edit():
-    file_path = ui.file_prompt()
-    file = open(file_path, "r")
+def edit(file):
     json_data = json.loads(file.read())
     file.close()
       
@@ -145,7 +143,7 @@ def edit():
                         statics = []
                     if simulate_button.rect.collidepoint(m_x, m_y):
                         simulate_button.color = (255, 255, 0)
-                        main.main()
+                        main.main(open(file.name))
                         pygame.quit()     
                         exit()      
                         
@@ -199,4 +197,6 @@ def edit():
 
         pygame.display.update()
 if __name__ == "__main__":
-    edit()
+    file_path = ui.file_prompt()
+    file = open(file_path)
+    edit(file)

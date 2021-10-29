@@ -5,10 +5,11 @@ import rag
 import editor
 import tkinter as tk
 from tkinter.filedialog import askopenfilename
+import ui
 
 pygame.init()
 
-def main():
+def main(file):
     # window properties
     width, height = 1280, 720
     screen = pygame.display.set_mode((width, height))
@@ -30,13 +31,10 @@ def main():
     editButtonColor = (200,200,200)
     editButtonText = "Editor"
 
-    # load ragdoll from json
-    #data = open(os.path.dirname(os.path.realpath(__file__)) + "/object.rag", "r")
-    tk.Tk().withdraw() # part of the import if you are not using other tkinter functions
-    fn = askopenfilename()
-    data = open(fn)
-    data = json.loads(data.read())
-    ragdoll = rag.Rag(data)
+    # load ragdoll from json 
+    json_data = json.loads(file.read())
+    ragdoll = rag.Rag(json_data)
+    file.close()
 
     mouse_point = None # point following mouse
 
@@ -87,7 +85,8 @@ def main():
                 mouse_point = None
                 if event.button == pygame.BUTTON_LEFT:
                     if editButton.collidepoint(m_x, m_y):
-                        editor.edit()
+                        
+                        editor.edit(open(file.name))
                         pygame.quit()
                         exit()
 
@@ -100,6 +99,7 @@ def main():
         clock.tick(60)
         
 if __name__ == '__main__':
-    print("Running")
-    main()
+    file_path = ui.file_prompt()
+    file = open(file_path)
+    main(file)
    
