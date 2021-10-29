@@ -1,11 +1,8 @@
-import math, json, os
-
-import pygame
-import rag
+import pygame, json, ui, rag
 
 pygame.init()
 
-def main():
+def main(file):
     # window properties
     width, height = 1280, 720
     screen = pygame.display.set_mode((width, height))
@@ -17,12 +14,11 @@ def main():
     scale = 20
 
     # load ragdoll from json
-    data = open(os.path.dirname(os.path.realpath(__file__)) + "/object.rag", "r")
-    data = json.loads(data.read())
-    ragdoll = rag.Rag(data)
+    file = open(file.name, "r")
+    json_data = json.loads(file.read())
+    ragdoll = rag.Rag(json_data)
 
-    # used for mouse follow
-    mouse_point = None
+    mouse_point = None # point following mouse
 
     point_radius, stick_width = 5, 3
 
@@ -74,4 +70,4 @@ def main():
         clock.tick(60)
 
 if __name__ == '__main__':
-    main()
+    main(ui.file_prompt())
