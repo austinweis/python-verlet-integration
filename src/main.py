@@ -1,11 +1,5 @@
-import math, json, os
-
-import pygame
-import rag
-import editor
-import tkinter as tk
-from tkinter.filedialog import askopenfilename
-import ui
+import json, pygame
+import rag, editor, ui
 
 pygame.init()
 
@@ -16,20 +10,22 @@ def main(file):
     pygame.display.set_caption("Verlet Physics Simulation")
     screen_color = (25, 25, 25)
     screen.fill(screen_color)
-    font = pygame.font.Font(None, 20)
 
     clock = pygame.time.Clock()
     scale = 20
 
-    #menu bar setup
-    menuBarHeight = 20
-    menuBar = pygame.Rect((0, 0),(1280, menuBarHeight))
-    menuBarColor = (120, 120, 120)
+    # gui objects
+    menu_bar       = ui.Button((width, 20), (120, 120, 120))
+    edit_button    = ui.Button((100, 20), (200, 200, 200), "Editor")
 
-    #edit button
-    editButton = pygame.Rect((0,0), (50, menuBarHeight))
-    editButtonColor = (200,200,200)
-    editButtonText = "Editor"
+    friction_label = ui.Title((200, 200, 200), "friction")
+    friction_input = ui.InputBox((100, 20), (200, 200, 200), str(rag.friction), True)
+    gravity_label  = ui.Title((200, 200, 200), "gravity")
+    gravity_input  = ui.InputBox((100, 20), (200, 200, 200), str(rag.gravity), True)
+    bounce_label   = ui.Title((200, 200, 200), "bounce")
+    bounce_input   = ui.InputBox((100, 20), (200, 200, 200), str(rag.bounce), True)
+    rigidity_label = ui.Title((200, 200, 200), "rigidity")
+    rigidity_input = ui.InputBox((100, 20), (200, 200, 200), str(rag.rigidity), True)
 
     # load ragdoll from json 
     json_data = json.loads(file.read())
@@ -42,7 +38,7 @@ def main(file):
 
     def update_rag(rag, rigidity):
         rag.move_dynamic_points()
-        for i in range(rigidity):
+        for _ in range(rigidity):
             rag.update_sticks()
             rag.constrain_points((width/scale, height/scale))
 
@@ -67,12 +63,19 @@ def main(file):
 
         #gui
         screen.fill(screen_color)
-        update_rag(ragdoll, 6)
+        update_rag(ragdoll, int(rag.rigidity))
         draw_rag(ragdoll)
-        pygame.draw.rect(screen, menuBarColor, menuBar)
-        textSurface = font.render(editButtonText, True, (0, 0, 0))
-        pygame.draw.rect(screen, editButtonColor, editButton)
-        screen.blit(textSurface, (editButton.centerx - textSurface.get_width()/2, editButton.centery - textSurface.get_height()/2))
+        menu_bar.draw(screen, width/2, menu_bar.rect.height/2)
+        edit_button.draw(screen, edit_button.rect.width/2, edit_button.rect.height/2)
+
+        friction_input.draw(screen, 200, gravity_input.rect.height/2)
+        friction_label.draw(screen, 125, 10)
+        gravity_input.draw(screen, 350, gravity_input.rect.height/2)
+        gravity_label.draw(screen, 275, 10)
+        bounce_input.draw(screen, 500, gravity_input.rect.height/2)
+        bounce_label.draw(screen, 425, 10)
+        rigidity_input.draw(screen, 650, gravity_input.rect.height/2)
+        rigidity_label.draw(screen, 575, 10)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -84,11 +87,19 @@ def main(file):
             if event.type == pygame.MOUSEBUTTONUP:
                 mouse_point = None
                 if event.button == pygame.BUTTON_LEFT:
-                    if editButton.collidepoint(m_x, m_y):
-                        
+                    if edit_button.rect.collidepoint(m_x, m_y):     
                         editor.edit(open(file.name))
                         pygame.quit()
                         exit()
+            friction_input.handle_event(event)
+            gravity_input.handle_event(event)
+            bounce_input.handle_event(event)
+            rigidity_input.handle_event(event)
+
+            rag.friction = 0 if friction_input.text == '' else float(friction_input.text)
+            rag.gravity  = 0 if gravity_input.text  == '' else float(gravity_input.text)
+            rag.bounce   = 0 if bounce_input.text   == '' else float(bounce_input.text)
+            rag.rigidity = 0 if rigidity_input.text == '' else int(rigidity_input.text)
 
         if mouse_point in ragdoll.statics:
             ragdoll.move_static_point(mouse_point, (m_x/scale, m_y/scale))
@@ -99,7 +110,5 @@ def main(file):
         clock.tick(60)
         
 if __name__ == '__main__':
-    file_path = ui.file_prompt()
-    file = open(file_path)
+    file = open(ui.file_prompt())
     main(file)
-   

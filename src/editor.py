@@ -1,12 +1,21 @@
-import pygame, json, main, ui
+import pygame, json
+import main, ui
 
 from sys import exit
 
 pygame.init()
 
 def edit(file):
-    json_data = json.loads(file.read())
-    file.close()
+    try:
+        json_data = json.loads(file.read())
+        file.close()
+    except:
+        json_data =     data = {
+        "points" : [],
+        "sticks" : [],
+        "forms"  : [],
+        "statics": []
+        }
       
     width, height = 720, 720
     screen = pygame.display.set_mode((width + 300, height))
@@ -132,7 +141,7 @@ def edit(file):
                             "forms": paths,
                             "statics" : statics
                         }
-                        file = open(file_path, "w")
+                        file = open(file.name, "w")
                         file.write(json.dumps(data, indent=4))
                         file.close()
                     if clear_button.rect.collidepoint(m_x, m_y):
